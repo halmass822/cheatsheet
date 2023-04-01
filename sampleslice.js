@@ -1,73 +1,58 @@
-// Import createAsyncThunk and createSlice here.
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-// Create loadCommentsForArticleId here.
-export const loadCommentsForArticleId = createAsyncThunk(
-  'allComments/getComments',
-  async (id) => {
-    const response = await fetch(`api/articles/${id}/comments`);
-    const json = await response.json();
-    return json;
-  }
-)
-// Create postCommentForArticleId here.
-export const postCommentForArticleId = createAsyncThunk(
-  'allComments/postComment',
-  async ({articleId, comment}) => {
-    const requestBody = await JSON.stringify({articleId, comment});
-    const response = await fetch(`api/articles/${articleId}/comments`, {
-      method: 'POST',
-      body: requestBody
-    });
-    const json = await response.json();
-    return json
-  }
-)
+import { createAsyncThunk, createSlice, configureStore } from "@reduxjs/toolkit";
+const APIKey = "888d5c782c2c48e2a2e0215147";
+const authHeader = {"X-API-KEY": APIKey};
 
-
-export const commentsSlice = createSlice({
-  name: 'comments',
-  initialState: {
-    byArticleId: {},
-    isLoadingComments: false,
-    failedToLoadComments: false,
-    createCommentIsPending: false,
-    failedToCreateComment: false
-  },
-  extraReducers: {
-    [loadCommentsForArticleId.pending]: (state, action) => {
-      state.isLoadingComments = true;
-      state.failedToLoadComments = false;
-    },
-    [loadCommentsForArticleId.fulfilled]: (state, action) => {
-      state.byArticleId[action.payload.articleId] = action.payload.comments;
-      state.isLoadingComments = false;
-      state.failedToLoadComments = false;
-    },
-    [loadCommentsForArticleId.rejected]: (state, action) => {
-      state.isLoadingComments = false;
-      state.failedToLoadComments = true;
-    },
-    [postCommentForArticleId.pending]: (state, action) => {
-      state.createCommentIsPending = true;
-      state.failedToCreateComment = false;
-    },
-    [postCommentForArticleId.fulfilled]: (state, action) => {
-      const nextCommentId = state.byArticleId[action.payload.articleId].length + 2;
-      let newComment = {articleId: action.payload.articleId, id: nextCommentId, text: action.payload.text}
-      console.log(newComment);
-      state.byArticleId[action.payload.articleId].push(newComment);
-      state.createCommentIsPending = false;
-      state.failedToCreateComment = false;
-    },
-    [postCommentForArticleId.rejected]: (state, action) => {
-      state.createCommentIsPending = false;
-      state.failedToCreateComment = true;
+export const getWeather = createAsyncThunk(
+    "weather/getWeather",
+    async ({station, type}) => {
+        console.log(`getWeather(${station}, ${type})`);
+        const response = await fetch(`https://api.checkwx.com/${type}/${station}/decoded`, { headers: authHeader });
+        const json = await response.json();
+        return json;
     }
-  }
+);
+
+const weather = createSlice({
+    name: "weather",
+    initialState: {
+        station: "CYXU",
+        type: "metar",
+        weather: {},
+        isLoadingWeather: false,
+        failedToLoadWeather: false
+    },
+    reducers: {
+        setStation: (state, action) => {
+            state.station = action.payload
+        },
+        setType: (state, action) => {
+            state.type = action.payload
+        }
+    },
+    extraReducers: {
+        [getWeather.pending]: (state, action) => {
+            state.isLoadingWeather = true;
+            state.failedToLoadWeather = false;
+        },
+        [getWeather.fulfilled]: (state, action) => {
+            state.weather = action.payload;
+            state.isLoadingWeather = false;
+            state.failedToLoadWeather = false;
+        },
+        [getWeather.pending]: (state, action) => {
+            state.isLoadingWeather = false;
+            state.failedToLoadWeather = true;
+        }
+    }
 });
 
-export const selectComments = (state) => state.comments.byArticleId;
-export const isLoadingComments = (state) => state.comments.isLoadingComments;
-export const createCommentIsPending = (state) => state.comments.createCommentIsPending;
+export const weatherSelector = (state) => state.weather.weather;
+export const weatherLoadingSelector = (state) => state.weather.isLoadingWeather;
+export const loadingFailedSelector = (state) => state.weather.failedToLoadWeather;
+export const stationSelector = (state) => state.weather.station;
+export const typeSelector = (state) => state.weather.type;
+export const {setStation, setType} = weather.actions;
 
-export default commentsSlice.reducer;
+export default configureStore({
+    reducer: {
+        weather
