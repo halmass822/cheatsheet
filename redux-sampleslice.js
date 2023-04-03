@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, configureStore } from "@reduxjs/toolkit";
-const APIKey = "888d5c782c2c48e2a2e0215147";
+const APIKey = "";
 const authHeader = {"X-API-KEY": APIKey};
 
 export const getWeather = createAsyncThunk(
