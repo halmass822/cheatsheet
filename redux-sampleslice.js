@@ -55,4 +55,6 @@ export const {setStation, setType} = weather.actions;
 
 export default configureStore({
     reducer: {
-        weather
+        "weather": weather
+    }
+};
