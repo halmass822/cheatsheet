@@ -39,7 +39,7 @@ const weather = createSlice({
             state.isLoadingWeather = false;
             state.failedToLoadWeather = false;
         },
-        [getWeather.pending]: (state, action) => {
+        [getWeather.rejected]: (state, action) => {
             state.isLoadingWeather = false;
             state.failedToLoadWeather = true;
         }
