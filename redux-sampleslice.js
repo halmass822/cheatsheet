@@ -10,7 +10,7 @@ export const getWeather = createAsyncThunk(
         const json = await response.json();
         return json;
     }
-);
+); //remember to useDispatch() to use the thunk
 
 const weather = createSlice({
     name: "weather",
