@@ -53,6 +53,8 @@ export const stationSelector = (state) => state.weather.station;
 export const typeSelector = (state) => state.weather.type;
 export const {setStation, setType} = weather.actions;
 
+//don't forget to add slices to the store!
+
 export default configureStore({
     reducer: {
         "weather": weather
