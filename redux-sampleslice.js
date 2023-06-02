@@ -4,7 +4,7 @@ const authHeader = {"X-API-KEY": APIKey};
 
 export const getWeather = createAsyncThunk(
     "weather/getWeather",
-    async ({station, type}) => {
+    async ({station, type}) => { //always call as one object as the parameter
         console.log(`getWeather(${station}, ${type})`);
         const response = await fetch(`https://api.checkwx.com/${type}/${station}/decoded`, { headers: authHeader });
         const json = await response.json();
